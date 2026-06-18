@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Image Twist</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="control-panel" aria-label="Image Twist controls">
+        <div class="brand-block">
+          <p class="eyebrow">Image Twist</p>
+          <h1>Get twisted.</h1>
+        </div>
+
+        <label class="drop-zone" id="dropZone">
+          <input id="imageInput" type="file" accept="image/*">
+          <span class="drop-title">Drop image</span>
+        </label>
+
+        <section class="twist-readout" aria-label="Current twist">
+          <p class="readout-label">Current twist</p>
+          <h2 id="recipeName">Original</h2>
+          <div class="pulse-strip" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </section>
+
+        <label class="twist-picker" for="twistSelect">
+          <span>Choose twist</span>
+          <select id="twistSelect"></select>
+        </label>
+
+        <div class="action-stack" aria-label="Image actions">
+          <button id="twistAgain" class="primary-action" type="button">Twist</button>
+          <button id="autoParty" type="button" aria-pressed="false">Auto Party</button>
+          <button id="downloadImage" type="button">Download PNG</button>
+        </div>
+      </aside>
+
+      <section class="stage" aria-label="Image preview">
+        <canvas id="canvas" width="1200" height="800"></canvas>
+        <p class="status-line" id="statusLine">Preparing sample</p>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

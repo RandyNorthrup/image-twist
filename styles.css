@@ -1,0 +1,338 @@
+:root {
+  color-scheme: light;
+  --ink: #17191c;
+  --muted: #65707c;
+  --paper: #f4f1ea;
+  --panel: #fffdf7;
+  --line: #d8d2c7;
+  --lime: #c7f464;
+  --cyan: #40c9c6;
+  --coral: #ff6f59;
+  --violet: #7c65ff;
+  --accent: #40c9c6;
+  --shadow: 0 22px 70px rgba(23, 25, 28, 0.16);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(23, 25, 28, 0.045) 1px, transparent 1px),
+    linear-gradient(rgba(23, 25, 28, 0.045) 1px, transparent 1px),
+    var(--paper);
+  background-size: 28px 28px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: #ffffff;
+  min-height: 50px;
+  cursor: pointer;
+  font-weight: 850;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+button:hover {
+  border-color: #9d9587;
+  box-shadow: 0 8px 20px rgba(23, 25, 28, 0.1);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+.drop-zone:focus-within {
+  outline: 3px solid color-mix(in srgb, var(--accent), transparent 52%);
+  outline-offset: 3px;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: minmax(294px, 360px) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 26px;
+  border-right: 1px solid var(--line);
+  background: rgba(255, 253, 247, 0.94);
+  backdrop-filter: blur(8px);
+}
+
+.brand-block {
+  display: grid;
+  gap: 6px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: clamp(2.2rem, 6vw, 4.4rem);
+  line-height: 0.9;
+  letter-spacing: 0;
+}
+
+h2 {
+  margin-bottom: 0;
+  font-size: clamp(1.55rem, 4vw, 2.3rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.drop-zone {
+  display: grid;
+  place-items: center;
+  min-height: 82px;
+  padding: 16px;
+  border: 1px dashed #a39b90;
+  border-radius: 8px;
+  background: #fffaf0;
+  cursor: pointer;
+  text-align: center;
+}
+
+.drop-zone.is-dragging {
+  border-color: var(--accent);
+  background: #ecfffd;
+}
+
+.drop-zone input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.drop-title {
+  font-weight: 900;
+}
+
+.status-line,
+.readout-label {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.twist-readout {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.readout-label {
+  margin-bottom: -4px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pulse-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  height: 38px;
+}
+
+.pulse-strip span {
+  border: 1px solid rgba(23, 25, 28, 0.18);
+  border-radius: 8px;
+  background: var(--accent);
+  transform-origin: bottom;
+  animation: pulse 1200ms ease-in-out infinite alternate;
+}
+
+.pulse-strip span:nth-child(2) {
+  animation-delay: 120ms;
+  background: var(--coral);
+}
+
+.pulse-strip span:nth-child(3) {
+  animation-delay: 240ms;
+  background: var(--lime);
+}
+
+.pulse-strip span:nth-child(4) {
+  animation-delay: 360ms;
+  background: var(--violet);
+}
+
+.pulse-strip span:nth-child(5) {
+  animation-delay: 480ms;
+  background: #ffffff;
+}
+
+.twist-picker {
+  display: grid;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 850;
+}
+
+.twist-picker span {
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.twist-picker select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 40px 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background:
+    linear-gradient(45deg, transparent 50%, var(--ink) 50%) right 18px center / 7px 7px no-repeat,
+    linear-gradient(135deg, var(--ink) 50%, transparent 50%) right 13px center / 7px 7px no-repeat,
+    #ffffff;
+  cursor: pointer;
+  appearance: none;
+  font-weight: 800;
+}
+
+@keyframes pulse {
+  from {
+    transform: scaleY(0.36);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.action-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.primary-action {
+  color: #111;
+  background: var(--accent);
+  border-color: color-mix(in srgb, var(--accent), #111 32%);
+}
+
+#autoParty[aria-pressed="true"] {
+  background: var(--lime);
+  border-color: #8aa629;
+}
+
+.stage {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  justify-items: center;
+  min-width: 0;
+  padding: 28px;
+}
+
+canvas {
+  display: block;
+  width: min(100%, 1160px);
+  max-height: calc(100vh - 96px);
+  aspect-ratio: var(--canvas-ratio, 3 / 2);
+  object-fit: contain;
+  border: 1px solid rgba(23, 25, 28, 0.22);
+  border-radius: 8px;
+  background:
+    linear-gradient(45deg, #dcd7cd 25%, transparent 25%),
+    linear-gradient(-45deg, #dcd7cd 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #dcd7cd 75%),
+    linear-gradient(-45deg, transparent 75%, #dcd7cd 75%),
+    #f7f3eb;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+  background-size: 24px 24px;
+  box-shadow: var(--shadow);
+}
+
+.status-line {
+  min-height: 20px;
+  margin: 0;
+  text-align: center;
+}
+
+body.is-twisting canvas {
+  animation: canvasPop 360ms ease;
+}
+
+@keyframes canvasPop {
+  0% {
+    transform: scale(0.99) rotate(-0.25deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@media (max-width: 880px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .control-panel {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .stage {
+    min-height: 54vh;
+    padding: 18px;
+  }
+
+  canvas {
+    max-height: 68vh;
+  }
+}
+
+@media (max-width: 520px) {
+  .control-panel {
+    padding: 18px;
+  }
+
+  button {
+    min-height: 48px;
+  }
+}
