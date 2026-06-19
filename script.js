@@ -491,7 +491,7 @@ function loadSample() {
 
 function runChosenTwist() {
   const selectedRecipe = recipes.find((item) => item.id === refs.twistSelect.value);
-  const recipe = selectedRecipe || pickRecipe();
+  const recipe = selectedRecipe === state.currentRecipe ? pickRecipe() : selectedRecipe || pickRecipe();
   runTwist(recipe);
 }
 

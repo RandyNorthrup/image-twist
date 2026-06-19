@@ -7,8 +7,8 @@ Image Twist is a zero-dependency browser app for turning a loaded image into pla
 1. The app starts with a generated sample image.
 2. A user can load a local image with the file picker or drag/drop.
 3. Loaded images are shown as `Original` first. No twist is applied automatically on load.
-4. The dropdown chooses which named twist recipe will run.
-5. The `Twist` button applies the selected dropdown recipe.
+4. The dropdown chooses which named twist recipe will run next.
+5. The `Twist` button applies the selected dropdown recipe. If that recipe is already visible, it picks a different twist instead of repeating the same named recipe.
 6. `Auto Party` repeatedly runs random twist recipes.
 7. Changing the dropdown while `Auto Party` is active turns `Auto Party` off.
 8. `Download PNG` exports the currently visible canvas.
