@@ -8,7 +8,7 @@ function loadRecipeLibrary() {
   const sandbox = createBrowserSandbox();
 
   return vm.runInNewContext(
-    `${source}\n({ recipes, transforms, state, refs, runChosenTwist, recipeVariantProfiles, setStrengthFromSlider, scaledEffectAmount });`,
+    `${source}\n({ effectCatalog, recipes, transforms, state, refs, runChosenTwist, setStrengthFromSlider, scaledEffectAmount, effectBlendAmount });`,
     sandbox,
   );
 }
@@ -183,51 +183,17 @@ function createContext() {
   };
 }
 
-const stepLabelWords = {
-  pop: ["color", "pop"],
-  duotone: ["duotone"],
-  heatMap: ["heat", "map"],
-  oldPhoto: ["old", "photo"],
-  nightVision: ["night", "vision"],
-  comic: ["comic"],
-  neon: ["neon"],
-  glitch: ["glitch"],
-  pixelate: ["pixel", "blocks"],
-  halftone: ["halftone"],
-  ascii: ["ascii"],
-  mirror: ["mirror", "fold"],
-  swirl: ["swirl"],
-  mosaic: ["mosaic"],
-  kaleidoscope: ["kaleidoscope"],
-  prismBands: ["prism", "bands"],
-  chromaWave: ["chroma", "wave"],
-  rainbowBands: ["rainbow", "bands"],
-  lightLeaks: ["light", "leaks"],
-  stickers: ["stickers"],
-  ghostTrail: ["ghost", "trail"],
-  solarize: ["solarize"],
-  blueprint: ["blueprint"],
-  gridOverlay: ["grid"],
-  glassBlocks: ["glass", "blocks"],
-  bubbles: ["bubbles"],
-  paintSplats: ["paint", "splats"],
-  sliceShuffle: ["slice", "shuffle"],
-  softBloom: ["soft", "bloom"],
-  xerox: ["xerox"],
-  noiseSnow: ["noise"],
-  posterPunch: ["poster", "punch"],
-  confetti: ["confetti"],
-  burst: ["burst"],
-  scanlines: ["scanlines"],
-};
-
-test("recipe library contains over 100 unique recipes", () => {
-  const { recipes } = loadRecipeLibrary();
+test("recipe library contains over 100 unique single-effect recipes", () => {
+  const { effectCatalog, recipes, transforms } = loadRecipeLibrary();
   const ids = new Set(recipes.map((recipe) => recipe.id));
   const names = new Set(recipes.map((recipe) => recipe.name));
+  const transformIds = new Set(Object.keys(transforms));
   const signatures = new Set(recipes.map((recipe) => recipe.steps.map(([name, amount]) => `${name}:${amount}`).join("|")));
 
-  assert.equal(recipes.length, 125);
+  assert.equal(recipes.length, 110);
+  assert.equal(effectCatalog.length, recipes.length);
+  assert.equal(transformIds.size, recipes.length);
+  assert.ok(recipes.length > 100);
   assert.equal(ids.size, recipes.length);
   assert.equal(names.size, recipes.length);
   assert.equal(signatures.size, recipes.length);
@@ -243,30 +209,48 @@ test("twist dropdown starts on Original placeholder", () => {
   assert.equal(placeholder.disabled, true);
 });
 
-test("recipe names describe their transform steps", () => {
-  const { recipes } = loadRecipeLibrary();
+test("each recipe is one effect, not a merged chain", () => {
+  const { recipes, transforms } = loadRecipeLibrary();
 
   recipes.forEach((recipe) => {
-    const normalizedName = recipe.name.toLowerCase();
-    recipe.steps.forEach(([stepName]) => {
-      const words = stepLabelWords[stepName];
-      assert.ok(words, `missing label words for ${stepName}`);
-      assert.ok(
-        words.some((word) => normalizedName.includes(word)),
-        `${recipe.name} does not describe ${stepName}`,
-      );
-    });
+    assert.equal(recipe.steps.length, 1, `${recipe.name} merges multiple effects`);
+    assert.equal(recipe.steps[0][0], recipe.id, `${recipe.name} does not point at its own effect`);
+    assert.equal(typeof transforms[recipe.id], "function", `${recipe.name} has no unique transform`);
   });
 });
 
-test("generated variant names describe their added effects", () => {
-  const { recipes, recipeVariantProfiles } = loadRecipeLibrary();
+test("effect catalog covers multiple researched filter families", () => {
+  const { effectCatalog } = loadRecipeLibrary();
+  const types = new Set(effectCatalog.map((effect) => effect.type));
 
-  recipeVariantProfiles.forEach((profile) => {
-    const variants = recipes.filter((recipe) => recipe.id.endsWith(`-${profile.id}`));
-    assert.equal(variants.length, 25);
-    variants.forEach((recipe) => {
-      assert.ok(recipe.name.endsWith(`: ${profile.label}`), recipe.name);
+  [
+    "direct",
+    "tone",
+    "gradient",
+    "channel",
+    "poster",
+    "threshold",
+    "kernel",
+    "geometry",
+    "overlay",
+    "pattern",
+    "dither",
+  ].forEach((type) => assert.ok(types.has(type), `missing ${type} effect family`));
+});
+
+test("recipe library is not built from generated variant suffixes", () => {
+  const { recipes } = loadRecipeLibrary();
+  const oldVariantSuffixes = [
+    "-neon-chroma",
+    "-prism-light-leak",
+    "-pixel-noise",
+    "-mirror-burst",
+  ];
+
+  recipes.forEach((recipe) => {
+    assert.equal(recipe.name.includes(":"), false, `${recipe.name} looks like a generated variant`);
+    oldVariantSuffixes.forEach((suffix) => {
+      assert.equal(recipe.id.endsWith(suffix), false, `${recipe.id} keeps old generated variant suffix`);
     });
   });
 });
@@ -278,8 +262,7 @@ test("every recipe step points to a real transform and valid amount", () => {
     assert.ok(recipe.id);
     assert.ok(recipe.name);
     assert.match(recipe.accent, /^#[0-9a-f]{6}$/i);
-    assert.ok(recipe.steps.length >= 3);
-    assert.ok(recipe.steps.length <= 6);
+    assert.equal(recipe.steps.length, 1);
 
     recipe.steps.forEach(([stepName, amount]) => {
       assert.equal(typeof transforms[stepName], "function", `${recipe.name} uses missing transform ${stepName}`);
@@ -311,15 +294,24 @@ test("changing dropdown applies selected recipe immediately", () => {
   assert.equal(state.currentRecipe, selectedRecipe);
 });
 
-test("strength slider stores percent, fill, and scaled amount", () => {
-  const { refs, state, setStrengthFromSlider, scaledEffectAmount } = loadRecipeLibrary();
-  refs.strengthInput.value = "150";
+test("strength slider maps full range from near original to full effect", () => {
+  const { refs, state, setStrengthFromSlider, scaledEffectAmount, effectBlendAmount } = loadRecipeLibrary();
+  refs.strengthInput.value = "100";
 
   setStrengthFromSlider(false);
 
-  assert.equal(state.strength, 1.5);
+  assert.equal(state.strength, 1);
   assert.equal(refs.strengthInput.textContent, "");
-  assert.equal(refs.strengthInput.ariaValueText || refs.strengthInput.attributes?.["aria-valuetext"], "150% strength");
-  assert.equal(refs.strengthInput.style.getPropertyValue("--strength-fill"), "75%");
-  assert.ok(Math.abs(scaledEffectAmount(0.4, () => 0.5) - 0.6) < Number.EPSILON * 4);
+  assert.equal(refs.strengthInput.ariaValueText || refs.strengthInput.attributes?.["aria-valuetext"], "100% strength");
+  assert.equal(refs.strengthInput.style.getPropertyValue("--strength-fill"), "100%");
+  assert.equal(effectBlendAmount(), 1);
+  assert.ok(Math.abs(scaledEffectAmount(0.4, () => 0.5) - 0.4) < Number.EPSILON * 4);
+
+  refs.strengthInput.value = "0";
+  setStrengthFromSlider(false);
+
+  assert.equal(state.strength, 0);
+  assert.equal(refs.strengthInput.style.getPropertyValue("--strength-fill"), "0%");
+  assert.equal(effectBlendAmount(), 0.02);
+  assert.ok(Math.abs(scaledEffectAmount(0.4, () => 0.95) - 0.08) < Number.EPSILON * 4);
 });

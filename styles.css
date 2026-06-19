@@ -264,7 +264,7 @@ h2 {
 }
 
 .strength-control {
-  --strength-fill: 50%;
+  --strength-fill: 100%;
   display: grid;
   gap: 12px;
   margin-top: auto;

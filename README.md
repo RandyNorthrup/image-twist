@@ -1,34 +1,38 @@
 # Image Twist
 
-Image Twist is a browser app for turning an image into generated visual twists. Load an image, choose a twist, adjust strength, and download the result as a PNG.
+Image Twist is a local browser app for applying visual twist effects to an image and exporting the result as a PNG.
 
 ## Features
 
-- Starts with a built-in sample image so the app is usable immediately.
-- Loads local images with file picker or drag and drop.
-- Shows loaded images as `Original` first before applying effects.
-- Offers 125 named twist recipes.
-- Applies dropdown selections immediately.
-- Keeps `Twist` from repeating the same visible recipe.
-- Adjusts twist strength live with a smooth slider.
-- Runs `Auto Party` to cycle through random twist recipes.
-- Exports the current canvas as a PNG.
-- Runs entirely in the browser with no upload step.
+- Built-in sample image on first load.
+- Local image upload with file picker or drag and drop.
+- `Original` state before any effect is applied.
+- 110 selectable single-effect twists.
+- Immediate effect application from the `Choose twist` dropdown.
+- `Twist` button for applying a selected effect or choosing a different random effect.
+- `Strength` slider from near-original to full effect.
+- `Auto Party` mode for cycling through random effects.
+- PNG export from the current canvas.
+- Browser-only image processing; selected images stay local.
 
 ## Twist Library
 
-Image Twist includes 25 base recipe families, each with four extra variants:
+The twist library contains 110 effects across these effect families:
 
-- `Neon Edge + Chroma Wave`
-- `Prism Bands + Light Leaks`
-- `Pixel Blocks + Noise Snow`
-- `Mirror Fold + Burst Rays`
+- Color and tone
+- Gradient maps
+- Channel effects
+- Posterize and threshold effects
+- Blur, sharpen, edge, and convolution filters
+- Geometry distortions
+- Light and surface overlays
+- Texture, pattern, and dither effects
 
-Recipe names describe the effect chain, such as `Duotone Swirl Confetti`, `Comic Halftone Burst`, or `Glass Blocks Soft Bloom Bubbles`.
+Example effects include `Cyanotype`, `Emboss`, `Water Ripple`, `Ordered Dither`, and `CRT Mask`.
 
 ## Setup
 
-No install is required.
+No install or build step is required.
 
 1. Download or clone this folder.
 2. Open `index.html` in a modern browser.
@@ -38,22 +42,21 @@ No install is required.
 
 1. Open `index.html`.
 2. Use the sample image, drop an image onto `Drop image`, or choose an image file.
-3. Pick a twist from `Choose twist`.
-4. Move the `Strength` slider to reduce or increase the current twist.
-5. Press `Twist` to jump to another twist.
-6. Press `Auto Party` to cycle through random twists.
-7. Press `Download PNG` to save the visible result.
+3. Pick an effect from `Choose twist`, or press `Twist` for a random effect.
+4. Move `Strength` left for a result closer to `Original`, or right for the full effect.
+5. Press `Auto Party` to cycle through random effects.
+6. Press `Download PNG` to save the current image.
 
 ## Controls
 
-- `Choose twist`: applies the selected recipe immediately.
-- `Twist`: applies the selected recipe, or chooses a different one if it is already showing.
-- `Strength`: adjusts the current twist live while keeping the same random seed for smoother changes.
-- `Auto Party`: repeatedly applies random recipes until turned off.
-- `Download PNG`: saves the current canvas.
+- `Choose twist`: applies the selected effect immediately.
+- `Twist`: applies the selected effect, or chooses a different random effect when the selected effect is already visible.
+- `Strength`: adjusts the current effect from near-original to full effect.
+- `Auto Party`: starts or stops random effect cycling.
+- `Download PNG`: saves the visible canvas as a PNG.
 
 ## Notes
 
-- Images stay local in the browser.
-- Each twist is generated from the original image, not stacked on top of the previous twist.
-- The dropdown shows `Original` before any twist is selected.
+- Effects always render from the original source image.
+- The dropdown starts on `Original`.
+- `Strength` changes are live for the current effect.

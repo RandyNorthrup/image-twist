@@ -15,7 +15,10 @@ const refs = {
 
 const MAX_SIDE = 2100;
 const STRENGTH_MIN = 0;
-const STRENGTH_MAX = 200;
+const STRENGTH_MAX = 100;
+const MIN_EFFECT_BLEND = 0.02;
+const TRANSFORM_AMOUNT_FLOOR = 0.2;
+const TRANSFORM_AMOUNT_JITTER = 0.08;
 const TWIST_PLACEHOLDER_VALUE = "";
 const TWIST_PLACEHOLDER_LABEL = "Original";
 
@@ -34,368 +37,130 @@ const state = {
 const RECIPE_TITLE_MAX_SIZE = 36;
 const RECIPE_TITLE_MIN_SIZE = 15;
 
-const recipes = [
-  {
-    id: "candy-portal",
-    name: "Duotone Swirl Confetti",
-    accent: "#ff6fbc",
-    steps: [
-      ["duotone", 0.95],
-      ["swirl", 0.62],
-      ["confetti", 0.8],
-    ],
-  },
-  {
-    id: "glitch-carnival",
-    name: "Color Pop Glitch Neon Scanlines",
-    accent: "#40c9c6",
-    steps: [
-      ["pop", 0.7],
-      ["glitch", 0.95],
-      ["neon", 0.76],
-      ["scanlines", 0.56],
-    ],
-  },
-  {
-    id: "comic-blast",
-    name: "Comic Halftone Burst",
-    accent: "#ffd447",
-    steps: [
-      ["comic", 0.9],
-      ["halftone", 0.34],
-      ["burst", 0.72],
-    ],
-  },
-  {
-    id: "arcade-night",
-    name: "Night Vision Glitch Scanlines",
-    accent: "#29ff72",
-    steps: [
-      ["nightVision", 0.92],
-      ["glitch", 0.42],
-      ["scanlines", 0.9],
-    ],
-  },
-  {
-    id: "heatwave-poster",
-    name: "Heat Map Comic Burst",
-    accent: "#ff6f59",
-    steps: [
-      ["heatMap", 0.98],
-      ["comic", 0.35],
-      ["burst", 0.42],
-    ],
-  },
-  {
-    id: "pixel-popcorn",
-    name: "Pixel Blocks Color Pop Confetti",
-    accent: "#c7f464",
-    steps: [
-      ["pixelate", 0.78],
-      ["pop", 0.88],
-      ["confetti", 0.66],
-    ],
-  },
-  {
-    id: "mirror-maze",
-    name: "Mirror Fold Duotone Neon",
-    accent: "#7c65ff",
-    steps: [
-      ["mirror", 0.72],
-      ["duotone", 0.62],
-      ["neon", 0.48],
-    ],
-  },
-  {
-    id: "ascii-dream",
-    name: "ASCII Glitch Scanlines",
-    accent: "#c7f464",
-    steps: [
-      ["ascii", 0.74],
-      ["glitch", 0.18],
-      ["scanlines", 0.5],
-    ],
-  },
-  {
-    id: "retro-booth",
-    name: "Old Photo Burst Confetti",
-    accent: "#c59b62",
-    steps: [
-      ["oldPhoto", 0.9],
-      ["burst", 0.24],
-      ["confetti", 0.28],
-    ],
-  },
-  {
-    id: "mosaic-party",
-    name: "Mosaic Color Pop Confetti",
-    accent: "#40c9c6",
-    steps: [
-      ["mosaic", 0.82],
-      ["pop", 0.72],
-      ["confetti", 0.9],
-    ],
-  },
-  {
-    id: "kaleido-soda",
-    name: "Kaleidoscope Color Pop Prism Bands",
-    accent: "#7c65ff",
-    steps: [
-      ["kaleidoscope", 0.78],
-      ["pop", 0.75],
-      ["prismBands", 0.7],
-    ],
-  },
-  {
-    id: "prism-rain",
-    name: "Chroma Wave Rainbow Bands Light Leaks",
-    accent: "#40c9c6",
-    steps: [
-      ["chromaWave", 0.86],
-      ["rainbowBands", 0.82],
-      ["lightLeaks", 0.62],
-    ],
-  },
-  {
-    id: "sticker-bomb",
-    name: "Color Pop Stickers Comic",
-    accent: "#ffd447",
-    steps: [
-      ["pop", 0.72],
-      ["stickers", 0.92],
-      ["comic", 0.22],
-    ],
-  },
-  {
-    id: "vhs-ghost",
-    name: "Ghost Trail Glitch Scanlines Noise",
-    accent: "#ff6f59",
-    steps: [
-      ["ghostTrail", 0.76],
-      ["glitch", 0.52],
-      ["scanlines", 0.88],
-      ["noiseSnow", 0.42],
-    ],
-  },
-  {
-    id: "solar-flare",
-    name: "Solarize Light Leaks Burst",
-    accent: "#ffb000",
-    steps: [
-      ["solarize", 0.88],
-      ["lightLeaks", 0.9],
-      ["burst", 0.72],
-    ],
-  },
-  {
-    id: "blueprint-beam",
-    name: "Blueprint Scanlines Grid",
-    accent: "#2f80ed",
-    steps: [
-      ["blueprint", 0.86],
-      ["scanlines", 0.28],
-      ["gridOverlay", 0.5],
-    ],
-  },
-  {
-    id: "bubble-wrap",
-    name: "Glass Blocks Bubbles Duotone",
-    accent: "#40c9c6",
-    steps: [
-      ["glassBlocks", 0.45],
-      ["bubbles", 0.88],
-      ["duotone", 0.24],
-    ],
-  },
-  {
-    id: "paint-splash",
-    name: "Color Pop Paint Splats Halftone",
-    accent: "#ff6f59",
-    steps: [
-      ["pop", 0.82],
-      ["paintSplats", 0.92],
-      ["halftone", 0.18],
-    ],
-  },
-  {
-    id: "slice-shuffle",
-    name: "Slice Shuffle Chroma Wave Confetti",
-    accent: "#c7f464",
-    steps: [
-      ["sliceShuffle", 0.88],
-      ["chromaWave", 0.4],
-      ["confetti", 0.32],
-    ],
-  },
-  {
-    id: "dream-bloom",
-    name: "Soft Bloom Duotone Light Leaks",
-    accent: "#ff9de2",
-    steps: [
-      ["softBloom", 0.86],
-      ["duotone", 0.42],
-      ["lightLeaks", 0.6],
-    ],
-  },
-  {
-    id: "xerox-jam",
-    name: "Xerox Slice Shuffle Noise",
-    accent: "#17191c",
-    steps: [
-      ["xerox", 0.82],
-      ["sliceShuffle", 0.32],
-      ["noiseSnow", 0.7],
-    ],
-  },
-  {
-    id: "glass-blocks",
-    name: "Glass Blocks Neon Rainbow Bands",
-    accent: "#40c9c6",
-    steps: [
-      ["glassBlocks", 0.86],
-      ["neon", 0.4],
-      ["rainbowBands", 0.28],
-    ],
-  },
-  {
-    id: "rainbow-tunnel",
-    name: "Swirl Rainbow Bands Kaleidoscope",
-    accent: "#7c65ff",
-    steps: [
-      ["swirl", 0.7],
-      ["rainbowBands", 0.95],
-      ["kaleidoscope", 0.28],
-    ],
-  },
-  {
-    id: "poster-punch",
-    name: "Poster Punch Comic Grid",
-    accent: "#ff6f59",
-    steps: [
-      ["posterPunch", 0.9],
-      ["comic", 0.5],
-      ["gridOverlay", 0.28],
-    ],
-  },
-  {
-    id: "frosted-lens",
-    name: "Glass Blocks Soft Bloom Bubbles",
-    accent: "#9ee8ff",
-    steps: [
-      ["glassBlocks", 0.55],
-      ["softBloom", 0.54],
-      ["bubbles", 0.38],
-    ],
-  },
+const effectCatalog = [
+  { id: "color-pop", name: "Color Pop", accent: "#ff6fbc", amount: 0.86, type: "direct", handler: popColor },
+  { id: "duotone", name: "Duotone", accent: "#40c9c6", amount: 0.9, type: "direct", handler: duotone },
+  { id: "heat-map", name: "Heat Map", accent: "#ff6f59", amount: 0.9, type: "direct", handler: heatMap },
+  { id: "old-photo", name: "Old Photo", accent: "#c59b62", amount: 0.88, type: "direct", handler: oldPhoto },
+  { id: "night-vision", name: "Night Vision", accent: "#29ff72", amount: 0.86, type: "direct", handler: nightVision },
+  { id: "comic", name: "Comic", accent: "#ffd447", amount: 0.82, type: "direct", handler: comic },
+  { id: "neon-edge", name: "Neon Edge", accent: "#40c9c6", amount: 0.82, type: "direct", handler: neonEdge },
+  { id: "glitch", name: "Glitch", accent: "#ff6f59", amount: 0.74, type: "direct", handler: glitch },
+  { id: "pixel-blocks", name: "Pixel Blocks", accent: "#c7f464", amount: 0.78, type: "direct", handler: pixelate },
+  { id: "halftone", name: "Halftone", accent: "#ffd447", amount: 0.68, type: "direct", handler: halftone },
+  { id: "ascii-art", name: "ASCII Art", accent: "#c7f464", amount: 0.72, type: "direct", handler: ascii },
+  { id: "mirror-fold", name: "Mirror Fold", accent: "#7c65ff", amount: 0.7, type: "direct", handler: mirrorFold },
+  { id: "swirl", name: "Swirl", accent: "#7c65ff", amount: 0.72, type: "direct", handler: swirl },
+  { id: "mosaic", name: "Mosaic", accent: "#40c9c6", amount: 0.76, type: "direct", handler: mosaic },
+  { id: "kaleidoscope", name: "Kaleidoscope", accent: "#7c65ff", amount: 0.76, type: "direct", handler: kaleidoscope },
+  { id: "prism-bands", name: "Prism Bands", accent: "#ff9de2", amount: 0.76, type: "direct", handler: prismBands },
+  { id: "chroma-wave", name: "Chroma Wave", accent: "#40c9c6", amount: 0.78, type: "direct", handler: chromaWave },
+  { id: "rainbow-bands", name: "Rainbow Bands", accent: "#ff6fbc", amount: 0.82, type: "direct", handler: rainbowBands },
+  { id: "light-leaks", name: "Light Leaks", accent: "#ff9de2", amount: 0.76, type: "direct", handler: lightLeaks },
+  { id: "stickers", name: "Stickers", accent: "#ffd447", amount: 0.76, type: "direct", handler: stickers },
+  { id: "ghost-trail", name: "Ghost Trail", accent: "#ff6f59", amount: 0.72, type: "direct", handler: ghostTrail },
+  { id: "solarize", name: "Solarize", accent: "#ffb000", amount: 0.82, type: "direct", handler: solarize },
+  { id: "blueprint", name: "Blueprint", accent: "#2f80ed", amount: 0.82, type: "direct", handler: blueprint },
+  { id: "grid-overlay", name: "Grid Overlay", accent: "#fffdf7", amount: 0.64, type: "direct", handler: gridOverlay },
+  { id: "glass-blocks", name: "Glass Blocks", accent: "#9ee8ff", amount: 0.72, type: "direct", handler: glassBlocks },
+  { id: "bubbles", name: "Bubbles", accent: "#40c9c6", amount: 0.78, type: "direct", handler: bubbles },
+  { id: "paint-splats", name: "Paint Splats", accent: "#ff6f59", amount: 0.78, type: "direct", handler: paintSplats },
+  { id: "slice-shuffle", name: "Slice Shuffle", accent: "#c7f464", amount: 0.78, type: "direct", handler: sliceShuffle },
+  { id: "soft-bloom", name: "Soft Bloom", accent: "#ff9de2", amount: 0.76, type: "direct", handler: softBloom },
+  { id: "xerox", name: "Xerox", accent: "#17191c", amount: 0.82, type: "direct", handler: xerox },
+  { id: "noise-snow", name: "Noise Snow", accent: "#fffdf7", amount: 0.7, type: "direct", handler: noiseSnow },
+  { id: "poster-punch", name: "Poster Punch", accent: "#ff6f59", amount: 0.78, type: "direct", handler: posterPunch },
+  { id: "confetti", name: "Confetti", accent: "#ffd447", amount: 0.78, type: "direct", handler: confetti },
+  { id: "burst-rays", name: "Burst Rays", accent: "#ffb000", amount: 0.72, type: "direct", handler: burst },
+  { id: "scanlines", name: "Scanlines", accent: "#40c9c6", amount: 0.8, type: "direct", handler: scanlines },
+  { id: "grayscale", name: "Grayscale", accent: "#d8d8d8", amount: 1, type: "tone", mode: "grayscale" },
+  { id: "monochrome-contrast", name: "Monochrome Contrast", accent: "#17191c", amount: 0.92, type: "tone", mode: "monochromeContrast" },
+  { id: "high-key-wash", name: "High Key Wash", accent: "#fffdf7", amount: 0.76, type: "tone", mode: "highKey" },
+  { id: "low-key-crush", name: "Low Key Crush", accent: "#17191c", amount: 0.78, type: "tone", mode: "lowKey" },
+  { id: "invert", name: "Invert", accent: "#7c65ff", amount: 0.9, type: "tone", mode: "invert" },
+  { id: "sepia-tone", name: "Sepia Tone", accent: "#c59b62", amount: 0.84, type: "tone", mode: "sepia" },
+  { id: "cyanotype", name: "Cyanotype", accent: "#2f80ed", amount: 0.86, type: "tone", mode: "cyanotype" },
+  { id: "tritone-pop", name: "Tritone Pop", accent: "#ff6fbc", amount: 0.84, type: "tone", mode: "tritone" },
+  { id: "bleach-bypass", name: "Bleach Bypass", accent: "#fffdf7", amount: 0.78, type: "tone", mode: "bleach" },
+  { id: "cross-process", name: "Cross Process", accent: "#c7f464", amount: 0.8, type: "tone", mode: "cross" },
+  { id: "infrared-glow", name: "Infrared Glow", accent: "#ff6fbc", amount: 0.82, type: "tone", mode: "infrared" },
+  { id: "lomo-vignette", name: "Lomo Vignette", accent: "#ff6f59", amount: 0.78, type: "tone", mode: "lomo" },
+  { id: "split-tone", name: "Split Tone", accent: "#40c9c6", amount: 0.8, type: "tone", mode: "split" },
+  { id: "sunset-gradient", name: "Sunset Gradient", accent: "#ff6f59", amount: 0.84, type: "gradient", colors: [[28, 18, 76], [255, 111, 89], [255, 212, 71]] },
+  { id: "ice-gradient", name: "Ice Gradient", accent: "#9ee8ff", amount: 0.84, type: "gradient", colors: [[10, 28, 74], [64, 201, 198], [255, 253, 247]] },
+  { id: "forest-gradient", name: "Forest Gradient", accent: "#66d47e", amount: 0.82, type: "gradient", colors: [[10, 36, 22], [61, 124, 52], [199, 244, 100]] },
+  { id: "lava-gradient", name: "Lava Gradient", accent: "#ff6f59", amount: 0.86, type: "gradient", colors: [[18, 8, 12], [172, 28, 34], [255, 180, 0]] },
+  { id: "violet-gold-map", name: "Violet Gold Map", accent: "#ffd447", amount: 0.82, type: "gradient", colors: [[36, 20, 70], [124, 101, 255], [255, 212, 71]] },
+  { id: "teal-orange-map", name: "Teal Orange Map", accent: "#40c9c6", amount: 0.82, type: "gradient", colors: [[12, 58, 62], [64, 201, 198], [255, 111, 89]] },
+  { id: "red-channel", name: "Red Channel", accent: "#ff6f59", amount: 0.92, type: "channel", mode: "red" },
+  { id: "green-channel", name: "Green Channel", accent: "#29ff72", amount: 0.92, type: "channel", mode: "green" },
+  { id: "blue-channel", name: "Blue Channel", accent: "#2f80ed", amount: 0.92, type: "channel", mode: "blue" },
+  { id: "channel-swap", name: "Channel Swap", accent: "#7c65ff", amount: 0.9, type: "channel", mode: "swap" },
+  { id: "channel-rotate", name: "Channel Rotate", accent: "#ff6fbc", amount: 0.88, type: "channel", mode: "rotate" },
+  { id: "saturation-crush", name: "Saturation Crush", accent: "#d8d8d8", amount: 0.82, type: "tone", mode: "saturationCrush" },
+  { id: "saturation-boost", name: "Saturation Boost", accent: "#c7f464", amount: 0.82, type: "tone", mode: "saturationBoost" },
+  { id: "posterize-three", name: "Posterize Three", accent: "#ff6f59", amount: 0.86, type: "poster", levels: 3 },
+  { id: "posterize-six", name: "Posterize Six", accent: "#ffd447", amount: 0.82, type: "poster", levels: 6 },
+  { id: "binary-threshold", name: "Binary Threshold", accent: "#17191c", amount: 0.9, type: "threshold", mode: "binary" },
+  { id: "inverse-threshold", name: "Inverse Threshold", accent: "#fffdf7", amount: 0.9, type: "threshold", mode: "inverse" },
+  { id: "shadow-threshold", name: "Shadow Threshold", accent: "#2f80ed", amount: 0.82, type: "threshold", mode: "shadow" },
+  { id: "highlight-threshold", name: "Highlight Threshold", accent: "#ffd447", amount: 0.82, type: "threshold", mode: "highlight" },
+  { id: "duo-ink", name: "Duo Ink", accent: "#40c9c6", amount: 0.86, type: "tone", mode: "duoInk" },
+  { id: "gaussian-soft", name: "Gaussian Soft", accent: "#ff9de2", amount: 0.72, type: "kernel", mode: "gaussianSoft" },
+  { id: "box-blur", name: "Box Blur", accent: "#9ee8ff", amount: 0.68, type: "kernel", mode: "boxBlur" },
+  { id: "sharpen", name: "Sharpen", accent: "#fffdf7", amount: 0.74, type: "kernel", mode: "sharpen" },
+  { id: "unsharp-mask", name: "Unsharp Mask", accent: "#c7f464", amount: 0.74, type: "kernel", mode: "unsharp" },
+  { id: "emboss", name: "Emboss", accent: "#c59b62", amount: 0.82, type: "kernel", mode: "emboss" },
+  { id: "contour", name: "Contour", accent: "#17191c", amount: 0.82, type: "kernel", mode: "contour" },
+  { id: "find-edges", name: "Find Edges", accent: "#40c9c6", amount: 0.86, type: "kernel", mode: "findEdges" },
+  { id: "edge-enhance", name: "Edge Enhance", accent: "#ffd447", amount: 0.78, type: "kernel", mode: "edgeEnhance" },
+  { id: "laplace-lines", name: "Laplace Lines", accent: "#fffdf7", amount: 0.82, type: "kernel", mode: "laplace" },
+  { id: "detail-crisp", name: "Detail Crisp", accent: "#c7f464", amount: 0.76, type: "kernel", mode: "detail" },
+  { id: "smooth", name: "Smooth", accent: "#9ee8ff", amount: 0.72, type: "kernel", mode: "smooth" },
+  { id: "smooth-more", name: "Smooth More", accent: "#9ee8ff", amount: 0.82, type: "kernel", mode: "smoothMore" },
+  { id: "charcoal-sketch", name: "Charcoal Sketch", accent: "#17191c", amount: 0.86, type: "kernel", mode: "charcoal" },
+  { id: "pencil-sketch", name: "Pencil Sketch", accent: "#d8d8d8", amount: 0.82, type: "kernel", mode: "pencil" },
+  { id: "wave-horizontal", name: "Wave Horizontal", accent: "#40c9c6", amount: 0.78, type: "geometry", mode: "waveHorizontal" },
+  { id: "wave-vertical", name: "Wave Vertical", accent: "#40c9c6", amount: 0.78, type: "geometry", mode: "waveVertical" },
+  { id: "ripple", name: "Ripple", accent: "#9ee8ff", amount: 0.76, type: "geometry", mode: "ripple" },
+  { id: "water-ripple", name: "Water Ripple", accent: "#2f80ed", amount: 0.76, type: "geometry", mode: "waterRipple" },
+  { id: "pinch", name: "Pinch", accent: "#7c65ff", amount: 0.76, type: "geometry", mode: "pinch" },
+  { id: "bulge", name: "Bulge", accent: "#ff6fbc", amount: 0.76, type: "geometry", mode: "bulge" },
+  { id: "fisheye", name: "Fisheye", accent: "#ffd447", amount: 0.78, type: "geometry", mode: "fisheye" },
+  { id: "barrel-distort", name: "Barrel Distort", accent: "#c59b62", amount: 0.74, type: "geometry", mode: "barrel" },
+  { id: "diagonal-shear", name: "Diagonal Shear", accent: "#c7f464", amount: 0.7, type: "geometry", mode: "diagonalShear" },
+  { id: "zigzag", name: "Zigzag", accent: "#ff6f59", amount: 0.78, type: "geometry", mode: "zigzag" },
+  { id: "tunnel-warp", name: "Tunnel Warp", accent: "#7c65ff", amount: 0.78, type: "geometry", mode: "tunnel" },
+  { id: "spiral-warp", name: "Spiral Warp", accent: "#ff6fbc", amount: 0.78, type: "geometry", mode: "spiral" },
+  { id: "lens-refraction", name: "Lens Refraction", accent: "#9ee8ff", amount: 0.74, type: "geometry", mode: "lensRefraction" },
+  { id: "broken-glass", name: "Broken Glass", accent: "#fffdf7", amount: 0.76, type: "geometry", mode: "brokenGlass" },
+  { id: "film-grain", name: "Film Grain", accent: "#c59b62", amount: 0.78, type: "overlay", mode: "filmGrain" },
+  { id: "dust-scratches", name: "Dust Scratches", accent: "#fffdf7", amount: 0.78, type: "overlay", mode: "dustScratches" },
+  { id: "paper-fiber", name: "Paper Fiber", accent: "#fffdf7", amount: 0.72, type: "overlay", mode: "paperFiber" },
+  { id: "canvas-weave", name: "Canvas Weave", accent: "#c59b62", amount: 0.72, type: "pattern", mode: "canvasWeave" },
+  { id: "crosshatch", name: "Crosshatch", accent: "#17191c", amount: 0.76, type: "pattern", mode: "crosshatch" },
+  { id: "benday-dots", name: "Benday Dots", accent: "#ffd447", amount: 0.74, type: "pattern", mode: "bendayDots" },
+  { id: "newsprint-dots", name: "Newsprint Dots", accent: "#17191c", amount: 0.74, type: "pattern", mode: "newsprintDots" },
+  { id: "crt-mask", name: "CRT Mask", accent: "#40c9c6", amount: 0.8, type: "pattern", mode: "crtMask" },
+  { id: "lcd-stripes", name: "LCD Stripes", accent: "#2f80ed", amount: 0.78, type: "pattern", mode: "lcdStripes" },
+  { id: "ordered-dither", name: "Ordered Dither", accent: "#17191c", amount: 0.86, type: "dither", mode: "ordered" },
+  { id: "stipple", name: "Stipple", accent: "#fffdf7", amount: 0.76, type: "pattern", mode: "stipple" },
+  { id: "rain-streaks", name: "Rain Streaks", accent: "#9ee8ff", amount: 0.74, type: "overlay", mode: "rainStreaks" },
+  { id: "sparkle", name: "Sparkle", accent: "#ffd447", amount: 0.76, type: "overlay", mode: "sparkle" },
+  { id: "vignette-frame", name: "Vignette Frame", accent: "#17191c", amount: 0.78, type: "overlay", mode: "vignetteFrame" },
 ];
 
-const recipeVariantProfiles = [
-  {
-    id: "neon-chroma",
-    label: "Neon Edge + Chroma Wave",
-    accent: "#40c9c6",
-    amountLift: 0.02,
-    steps: [
-      ["neon", 0.54],
-      ["chromaWave", 0.46],
-    ],
-  },
-  {
-    id: "prism-light-leak",
-    label: "Prism Bands + Light Leaks",
-    accent: "#ff9de2",
-    amountLift: -0.04,
-    steps: [
-      ["prismBands", 0.58],
-      ["lightLeaks", 0.5],
-    ],
-  },
-  {
-    id: "pixel-noise",
-    label: "Pixel Blocks + Noise Snow",
-    accent: "#c7f464",
-    amountLift: -0.02,
-    steps: [
-      ["pixelate", 0.52],
-      ["noiseSnow", 0.44],
-    ],
-  },
-  {
-    id: "mirror-burst",
-    label: "Mirror Fold + Burst Rays",
-    accent: "#ffd447",
-    amountLift: 0.01,
-    steps: [
-      ["mirror", 0.5],
-      ["burst", 0.48],
-    ],
-  },
-];
+const recipes = effectCatalog.map(({ id, name, accent, amount }) => ({
+  id,
+  name,
+  accent,
+  steps: [[id, amount]],
+}));
 
-appendRecipeVariants();
-
-const transforms = {
-  pop: popColor,
-  duotone,
-  heatMap,
-  oldPhoto,
-  nightVision,
-  comic,
-  neon: neonEdge,
-  glitch,
-  pixelate,
-  halftone,
-  ascii,
-  mirror: mirrorFold,
-  swirl,
-  mosaic,
-  kaleidoscope,
-  prismBands,
-  chromaWave,
-  rainbowBands,
-  lightLeaks,
-  stickers,
-  ghostTrail,
-  solarize,
-  blueprint,
-  gridOverlay,
-  glassBlocks,
-  bubbles,
-  paintSplats,
-  sliceShuffle,
-  softBloom,
-  xerox,
-  noiseSnow,
-  posterPunch,
-  confetti,
-  burst,
-  scanlines,
-};
-
-function appendRecipeVariants() {
-  const baseRecipes = recipes.slice();
-
-  baseRecipes.forEach((recipe) => {
-    recipeVariantProfiles.forEach((profile) => {
-      recipes.push(createRecipeVariant(recipe, profile));
-    });
-  });
-}
-
-function createRecipeVariant(recipe, profile) {
-  return {
-    id: `${recipe.id}-${profile.id}`,
-    name: `${recipe.name}: ${profile.label}`,
-    accent: profile.accent,
-    steps: [
-      ...recipe.steps.map(([stepName, amount], index) => [
-        stepName,
-        clampUnit(amount + profile.amountLift + index * 0.015),
-      ]),
-      ...profile.steps,
-    ],
-  };
-}
+const transforms = Object.fromEntries(effectCatalog.map((effect) => [
+  effect.id,
+  (imageData, amount, random) => applyCatalogEffect(imageData, amount, random, effect),
+]));
 
 init();
 
@@ -631,6 +396,7 @@ function runTwist(recipe, options = {}) {
         working = transform(working, amount, random, index);
       });
 
+      working = blendImageData(state.source, working, effectBlendAmount());
       ctx.putImageData(working, 0, 0);
       setStatus(`${recipe.name} - ${canvas.width} x ${canvas.height}`);
     } catch (error) {
@@ -736,7 +502,15 @@ function flushStrengthRender() {
 }
 
 function scaledEffectAmount(baseAmount, random) {
-  return clampUnit(baseAmount * state.strength + (random() - 0.5) * 0.18);
+  const intensity = clampUnit(state.strength);
+  const amountScale = TRANSFORM_AMOUNT_FLOOR + intensity * (1 - TRANSFORM_AMOUNT_FLOOR);
+  const jitter = (random() - 0.5) * TRANSFORM_AMOUNT_JITTER * intensity;
+  return clampUnit(baseAmount * amountScale + jitter);
+}
+
+function effectBlendAmount() {
+  const intensity = clampUnit(state.strength);
+  return intensity === 0 ? MIN_EFFECT_BLEND : intensity;
 }
 
 function pickRecipe() {
@@ -1604,6 +1378,568 @@ function scanlines(imageData, amount) {
   }
 
   return outputCtx.getImageData(0, 0, width, height);
+}
+
+function applyCatalogEffect(imageData, amount, random, effect) {
+  const safeAmount = clampUnit(amount);
+
+  switch (effect.type) {
+    case "direct":
+      return effect.handler(imageData, safeAmount, random);
+    case "tone":
+      return toneEffect(imageData, safeAmount, effect.mode);
+    case "gradient":
+      return gradientEffect(imageData, safeAmount, effect.colors);
+    case "channel":
+      return channelEffect(imageData, safeAmount, effect.mode);
+    case "poster":
+      return posterEffect(imageData, safeAmount, effect.levels);
+    case "threshold":
+      return thresholdEffect(imageData, safeAmount, effect.mode);
+    case "kernel":
+      return kernelEffect(imageData, safeAmount, effect.mode);
+    case "geometry":
+      return geometryEffect(imageData, safeAmount, effect.mode);
+    case "overlay":
+      return overlayEffect(imageData, safeAmount, random, effect.mode);
+    case "pattern":
+      return patternEffect(imageData, safeAmount, random, effect.mode);
+    case "dither":
+      return ditherEffect(imageData, safeAmount);
+    default:
+      return cloneImageData(imageData);
+  }
+}
+
+function toneEffect(imageData, amount, mode) {
+  return mapPixels(imageData, (r, g, b, a, x, y, width, height) => {
+    const lum = luminance(r, g, b);
+    let target = [r, g, b];
+
+    switch (mode) {
+      case "grayscale":
+        target = [lum, lum, lum];
+        break;
+      case "monochromeContrast": {
+        const value = clamp((lum - 128) * (1.35 + amount * 0.9) + 128);
+        target = [value, value, value];
+        break;
+      }
+      case "highKey":
+        target = adjustContrast(
+          clamp(r + 52 + amount * 28),
+          clamp(g + 52 + amount * 28),
+          clamp(b + 52 + amount * 28),
+          0.78,
+        );
+        break;
+      case "lowKey":
+        target = adjustContrast(r * 0.68, g * 0.68, b * 0.68, 1.35 + amount * 0.45);
+        break;
+      case "invert":
+        target = [255 - r, 255 - g, 255 - b];
+        break;
+      case "sepia":
+        target = [
+          clamp(r * 0.393 + g * 0.769 + b * 0.189),
+          clamp(r * 0.349 + g * 0.686 + b * 0.168),
+          clamp(r * 0.272 + g * 0.534 + b * 0.131),
+        ];
+        break;
+      case "cyanotype":
+        target = gradientMap(lum / 255, [[5, 25, 64], [28, 102, 172], [230, 248, 255]]);
+        break;
+      case "tritone":
+        target = gradientMap(lum / 255, [[23, 25, 28], [255, 111, 188], [199, 244, 100]]);
+        break;
+      case "bleach": {
+        const gray = [lum, lum, lum];
+        target = adjustContrast(
+          blendRgb([r, g, b], gray, 0.42)[0],
+          blendRgb([r, g, b], gray, 0.42)[1],
+          blendRgb([r, g, b], gray, 0.42)[2],
+          1.28 + amount * 0.42,
+        );
+        break;
+      }
+      case "cross":
+        target = [
+          clamp(r * 1.22 + 18 * amount),
+          clamp(g * 1.05 + b * 0.18),
+          clamp(b * 0.82 + 34 * amount),
+        ];
+        break;
+      case "infrared":
+        target = [
+          clamp(lum * 0.5 + g * 0.9),
+          clamp(lum * 0.34 + r * 0.18),
+          clamp(lum * 0.7 + b * 0.25),
+        ];
+        break;
+      case "lomo": {
+        const vignette = vignetteFactor(x, y, width, height, 0.5 + amount * 0.35);
+        const saturated = saturate(r, g, b, 1.25 + amount * 0.75);
+        target = [
+          clamp(saturated[0] * vignette + 18 * amount),
+          clamp(saturated[1] * vignette),
+          clamp(saturated[2] * vignette + 8 * amount),
+        ];
+        break;
+      }
+      case "split": {
+        const shadow = [35, 82, 150];
+        const highlight = [255, 170, 86];
+        target = lum < 128
+          ? blendRgb([r, g, b], shadow, 0.45)
+          : blendRgb([r, g, b], highlight, 0.38);
+        break;
+      }
+      case "saturationCrush":
+        target = saturate(r, g, b, 0.18 + (1 - amount) * 0.28);
+        break;
+      case "saturationBoost":
+        target = saturate(r, g, b, 1.6 + amount * 1.2);
+        break;
+      case "duoInk":
+        target = lum < 128
+          ? mixRgb([12, 16, 26], [40, 201, 198], lum / 128)
+          : mixRgb([40, 201, 198], [255, 253, 247], (lum - 128) / 127);
+        break;
+      default:
+        target = [r, g, b];
+    }
+
+    return blendRgb([r, g, b], target, 0.35 + amount * 0.65).concat(a);
+  });
+}
+
+function gradientEffect(imageData, amount, colors) {
+  return mapPixels(imageData, (r, g, b, a) => {
+    const mapped = gradientMap(luminance(r, g, b) / 255, colors);
+    return blendRgb([r, g, b], mapped, 0.28 + amount * 0.66).concat(a);
+  });
+}
+
+function channelEffect(imageData, amount, mode) {
+  return mapPixels(imageData, (r, g, b, a, x, y, width) => {
+    let target = [r, g, b];
+
+    if (mode === "red") {
+      target = [r, g * 0.12, b * 0.12];
+    } else if (mode === "green") {
+      target = [r * 0.12, g, b * 0.12];
+    } else if (mode === "blue") {
+      target = [r * 0.12, g * 0.12, b];
+    } else if (mode === "swap") {
+      target = [b, r, g];
+    } else if (mode === "rotate") {
+      const wave = (Math.sin((x / width) * Math.PI * 2) + 1) * 0.5;
+      target = [
+        clamp(g * wave + b * (1 - wave)),
+        clamp(b * wave + r * (1 - wave)),
+        clamp(r * wave + g * (1 - wave)),
+      ];
+    }
+
+    return blendRgb([r, g, b], target, 0.38 + amount * 0.62).concat(a);
+  });
+}
+
+function posterEffect(imageData, amount, levels) {
+  const activeLevels = Math.max(2, Math.round(levels + (1 - amount) * 5));
+  return mapPixels(imageData, (r, g, b, a) => {
+    const target = [
+      posterize(r, activeLevels),
+      posterize(g, activeLevels),
+      posterize(b, activeLevels),
+    ];
+    return blendRgb([r, g, b], target, 0.45 + amount * 0.55).concat(a);
+  });
+}
+
+function thresholdEffect(imageData, amount, mode) {
+  return mapPixels(imageData, (r, g, b, a) => {
+    const lum = luminance(r, g, b);
+    const threshold = 118 + amount * 34;
+    let value = lum > threshold ? 255 : 0;
+    let target = [value, value, value];
+
+    if (mode === "inverse") {
+      value = lum > threshold ? 0 : 255;
+      target = [value, value, value];
+    } else if (mode === "shadow") {
+      target = lum < threshold ? [8, 18, 38] : [clamp(r + 34), clamp(g + 34), clamp(b + 34)];
+    } else if (mode === "highlight") {
+      target = lum > threshold ? [255, 238, 130] : [clamp(r * 0.42), clamp(g * 0.42), clamp(b * 0.42)];
+    }
+
+    return blendRgb([r, g, b], target, 0.45 + amount * 0.55).concat(a);
+  });
+}
+
+function kernelEffect(imageData, amount, mode) {
+  if (mode === "unsharp") {
+    const blurred = applyKernelRaw(imageData, [1, 2, 1, 2, 4, 2, 1, 2, 1], 16, 0);
+    return mapPixels(imageData, (r, g, b, a, x, y, width) => {
+      const index = (y * width + x) * 4;
+      return [
+        clamp(r + (r - blurred.data[index]) * (0.7 + amount * 1.2)),
+        clamp(g + (g - blurred.data[index + 1]) * (0.7 + amount * 1.2)),
+        clamp(b + (b - blurred.data[index + 2]) * (0.7 + amount * 1.2)),
+        a,
+      ];
+    });
+  }
+
+  if (mode === "charcoal" || mode === "pencil") {
+    return sketchKernelEffect(imageData, amount, mode);
+  }
+
+  const kernels = {
+    gaussianSoft: { kernel: [1, 2, 1, 2, 4, 2, 1, 2, 1], divisor: 16, offset: 0, blend: 0.72 },
+    boxBlur: { kernel: [1, 1, 1, 1, 1, 1, 1, 1, 1], divisor: 9, offset: 0, blend: 0.78 },
+    sharpen: { kernel: [0, -1, 0, -1, 5, -1, 0, -1, 0], divisor: 1, offset: 0, blend: 0.78 },
+    emboss: { kernel: [-2, -1, 0, -1, 1, 1, 0, 1, 2], divisor: 1, offset: 128, blend: 0.9 },
+    contour: { kernel: [-1, -1, -1, -1, 8, -1, -1, -1, -1], divisor: 1, offset: 128, blend: 0.86 },
+    findEdges: { kernel: [-1, -1, -1, -1, 8, -1, -1, -1, -1], divisor: 1, offset: 0, blend: 1 },
+    edgeEnhance: { kernel: [0, 0, 0, -1, 2, 0, 0, 0, 0], divisor: 1, offset: 0, blend: 0.75 },
+    laplace: { kernel: [0, 1, 0, 1, -4, 1, 0, 1, 0], divisor: 1, offset: 128, blend: 0.92 },
+    detail: { kernel: [0, -1, 0, -1, 6, -1, 0, -1, 0], divisor: 1, offset: 0, blend: 0.7 },
+    smooth: { kernel: [1, 1, 1, 1, 5, 1, 1, 1, 1], divisor: 13, offset: 0, blend: 0.7 },
+    smoothMore: { kernel: [1, 2, 1, 2, 8, 2, 1, 2, 1], divisor: 20, offset: 0, blend: 0.82 },
+  };
+  const config = kernels[mode] || kernels.sharpen;
+  const filtered = applyKernelRaw(imageData, config.kernel, config.divisor, config.offset);
+  return blendImageData(imageData, filtered, Math.min(1, config.blend * (0.35 + amount * 0.65)));
+}
+
+function sketchKernelEffect(imageData, amount, mode) {
+  const src = imageData.data;
+  const out = new ImageData(imageData.width, imageData.height);
+  const width = imageData.width;
+  const height = imageData.height;
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const index = (y * width + x) * 4;
+      const edge = edgeAmount(src, x, y, width, height);
+      const paper = 238 + pseudoNoise(x, y) * 10 * amount;
+      const value = mode === "charcoal"
+        ? clamp(paper - edge * (1.1 + amount * 2.4))
+        : clamp(255 - edge * (0.65 + amount * 1.4));
+      out.data[index] = value;
+      out.data[index + 1] = mode === "charcoal" ? value : clamp(value - 5);
+      out.data[index + 2] = mode === "charcoal" ? value : clamp(value - 12);
+      out.data[index + 3] = src[index + 3];
+    }
+  }
+
+  return out;
+}
+
+function applyKernelRaw(imageData, kernel, divisor, offset) {
+  const src = imageData.data;
+  const out = new ImageData(imageData.width, imageData.height);
+  const width = imageData.width;
+  const height = imageData.height;
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const destIndex = (y * width + x) * 4;
+      const totals = [0, 0, 0];
+
+      for (let ky = -1; ky <= 1; ky += 1) {
+        for (let kx = -1; kx <= 1; kx += 1) {
+          const weight = kernel[(ky + 1) * 3 + (kx + 1)];
+          const sourceIndex = sampleIndex(x + kx, y + ky, width, height);
+          totals[0] += src[sourceIndex] * weight;
+          totals[1] += src[sourceIndex + 1] * weight;
+          totals[2] += src[sourceIndex + 2] * weight;
+        }
+      }
+
+      out.data[destIndex] = clamp(totals[0] / divisor + offset);
+      out.data[destIndex + 1] = clamp(totals[1] / divisor + offset);
+      out.data[destIndex + 2] = clamp(totals[2] / divisor + offset);
+      out.data[destIndex + 3] = src[destIndex + 3];
+    }
+  }
+
+  return out;
+}
+
+function geometryEffect(imageData, amount, mode) {
+  const width = imageData.width;
+  const height = imageData.height;
+  const cx = width / 2;
+  const cy = height / 2;
+  const maxRadius = Math.hypot(cx, cy);
+  const wave = 8 + amount * 46;
+
+  return remapImageData(imageData, (x, y) => {
+    const dx = x - cx;
+    const dy = y - cy;
+    const radius = Math.hypot(dx, dy);
+    const angle = Math.atan2(dy, dx);
+    const normalizedRadius = radius / maxRadius;
+
+    if (mode === "waveHorizontal") {
+      return [x + Math.sin(y * (0.025 + amount * 0.02)) * wave, y];
+    }
+    if (mode === "waveVertical") {
+      return [x, y + Math.sin(x * (0.025 + amount * 0.02)) * wave];
+    }
+    if (mode === "ripple") {
+      const nextRadius = radius + Math.sin(radius * (0.035 + amount * 0.035)) * wave;
+      return [cx + Math.cos(angle) * nextRadius, cy + Math.sin(angle) * nextRadius];
+    }
+    if (mode === "waterRipple") {
+      return [
+        x + Math.sin(y * 0.045 + radius * 0.018) * wave * 0.7,
+        y + Math.cos(x * 0.038 + radius * 0.02) * wave * 0.7,
+      ];
+    }
+    if (mode === "pinch" || mode === "bulge" || mode === "fisheye") {
+      const power = mode === "pinch" ? 1 - amount * 0.5 : 1 + amount * 1.2;
+      const fisheyePower = mode === "fisheye" ? 1 + amount * 2 : power;
+      const nextRadius = maxRadius * Math.pow(normalizedRadius, fisheyePower);
+      return [cx + Math.cos(angle) * nextRadius, cy + Math.sin(angle) * nextRadius];
+    }
+    if (mode === "barrel") {
+      const factor = 1 + amount * 0.42 * normalizedRadius * normalizedRadius;
+      return [cx + dx * factor, cy + dy * factor];
+    }
+    if (mode === "diagonalShear") {
+      return [x + (y / height - 0.5) * wave * 2.6, y + (x / width - 0.5) * wave * 0.5];
+    }
+    if (mode === "zigzag") {
+      const cell = Math.max(12, Math.round(70 - amount * 38));
+      const direction = Math.floor(y / cell) % 2 === 0 ? 1 : -1;
+      return [x + direction * wave * 1.1, y];
+    }
+    if (mode === "tunnel" || mode === "spiral") {
+      const twist = (1 - normalizedRadius) * amount * (mode === "spiral" ? 4.8 : 2.6);
+      const zoom = mode === "tunnel" ? 1 + (1 - normalizedRadius) * amount * 0.75 : 1;
+      return [
+        cx + Math.cos(angle + twist) * radius / zoom,
+        cy + Math.sin(angle + twist) * radius / zoom,
+      ];
+    }
+    if (mode === "lensRefraction") {
+      const bend = Math.sin(normalizedRadius * Math.PI * 5) * wave * (1 - normalizedRadius);
+      return [cx + Math.cos(angle) * (radius + bend), cy + Math.sin(angle) * (radius + bend)];
+    }
+    if (mode === "brokenGlass") {
+      const cell = Math.max(22, Math.round(96 - amount * 54));
+      const gx = Math.floor(x / cell);
+      const gy = Math.floor(y / cell);
+      return [
+        x + pseudoNoise(gx, gy) * cell * amount * 0.42,
+        y + pseudoNoise(gy, gx) * cell * amount * 0.42,
+      ];
+    }
+
+    return [x, y];
+  });
+}
+
+function remapImageData(imageData, mapper) {
+  const out = new ImageData(imageData.width, imageData.height);
+  const width = imageData.width;
+  const height = imageData.height;
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const [sx, sy] = mapper(x, y, width, height);
+      copyPixel(imageData.data, out.data, sampleIndex(sx, sy, width, height), (y * width + x) * 4);
+    }
+  }
+
+  return out;
+}
+
+function overlayEffect(imageData, amount, random, mode) {
+  if (mode === "filmGrain") {
+    return mapPixels(imageData, (r, g, b, a) => {
+      const grain = (random() - 0.5) * amount * 70;
+      return [clamp(r + grain), clamp(g + grain), clamp(b + grain), a];
+    });
+  }
+
+  if (mode === "paperFiber") {
+    return mapPixels(imageData, (r, g, b, a, x, y) => {
+      const fiber = (pseudoNoise(x * 0.35, y * 1.7) + pseudoNoise(x * 1.8, y * 0.22)) * amount * 13;
+      return [clamp(r + fiber + 8), clamp(g + fiber + 5), clamp(b + fiber), a];
+    });
+  }
+
+  if (mode === "vignetteFrame") {
+    const vignetted = mapPixels(imageData, (r, g, b, a, x, y, width, height) => {
+      const factor = vignetteFactor(x, y, width, height, 0.45 + amount * 0.55);
+      return [clamp(r * factor), clamp(g * factor), clamp(b * factor), a];
+    });
+    const output = canvasFromImageData(vignetted);
+    const outputCtx = output.getContext("2d", { willReadFrequently: true });
+    outputCtx.strokeStyle = "rgba(23, 25, 28, 0.74)";
+    outputCtx.lineWidth = Math.max(6, Math.round(Math.min(imageData.width, imageData.height) * 0.022 * amount));
+    outputCtx.strokeRect(outputCtx.lineWidth / 2, outputCtx.lineWidth / 2, imageData.width - outputCtx.lineWidth, imageData.height - outputCtx.lineWidth);
+    return outputCtx.getImageData(0, 0, imageData.width, imageData.height);
+  }
+
+  const output = canvasFromImageData(imageData);
+  const outputCtx = output.getContext("2d", { willReadFrequently: true });
+  const width = imageData.width;
+  const height = imageData.height;
+
+  outputCtx.save();
+  if (mode === "dustScratches") {
+    outputCtx.globalCompositeOperation = "screen";
+    outputCtx.globalAlpha = 0.24 + amount * 0.28;
+    outputCtx.strokeStyle = "#fffdf7";
+    outputCtx.lineWidth = Math.max(1, Math.round(1 + amount * 2));
+    for (let i = 0; i < 28 + amount * 55; i += 1) {
+      const x = random() * width;
+      const y = random() * height;
+      outputCtx.beginPath();
+      outputCtx.moveTo(x, y);
+      outputCtx.lineTo(x + (random() - 0.5) * width * 0.16, y + random() * height * 0.18);
+      outputCtx.stroke();
+    }
+  } else if (mode === "rainStreaks") {
+    outputCtx.globalCompositeOperation = "screen";
+    outputCtx.globalAlpha = 0.18 + amount * 0.28;
+    outputCtx.strokeStyle = "#dff8ff";
+    outputCtx.lineWidth = Math.max(1, Math.round(1 + amount * 2));
+    for (let i = 0; i < 60 + amount * 120; i += 1) {
+      const x = random() * width;
+      const y = random() * height;
+      outputCtx.beginPath();
+      outputCtx.moveTo(x, y);
+      outputCtx.lineTo(x - width * 0.025, y + height * (0.05 + random() * 0.08));
+      outputCtx.stroke();
+    }
+  } else if (mode === "sparkle") {
+    outputCtx.globalCompositeOperation = "screen";
+    outputCtx.globalAlpha = 0.32 + amount * 0.32;
+    outputCtx.fillStyle = "#fffdf7";
+    outputCtx.strokeStyle = "#ffd447";
+    outputCtx.lineWidth = 1;
+    for (let i = 0; i < 18 + amount * 34; i += 1) {
+      drawStar(outputCtx, random() * width, random() * height, 6 + random() * 18 * amount, 2 + random() * 7 * amount, 4);
+    }
+  }
+  outputCtx.restore();
+
+  return outputCtx.getImageData(0, 0, width, height);
+}
+
+function patternEffect(imageData, amount, random, mode) {
+  if (mode === "crtMask" || mode === "lcdStripes" || mode === "canvasWeave") {
+    return mapPixels(imageData, (r, g, b, a, x, y) => {
+      if (mode === "crtMask") {
+        const scan = y % 3 === 0 ? 1 - amount * 0.34 : 1;
+        const dim = 1 - amount * 0.32;
+        const boost = 1 + amount * 0.22;
+        const mask = x % 3 === 0 ? [boost, dim, dim] : x % 3 === 1 ? [dim, boost, dim] : [dim, dim, boost];
+        const target = [clamp(r * scan * mask[0]), clamp(g * scan * mask[1]), clamp(b * scan * mask[2])];
+        return blendRgb([r, g, b], target, 0.35 + amount * 0.65).concat(a);
+      }
+      if (mode === "lcdStripes") {
+        const stripe = x % 4;
+        const boost = 1 + amount * 0.24;
+        const dim = 1 - amount * 0.18;
+        const target = [
+          clamp(r * (stripe === 0 ? boost : dim)),
+          clamp(g * (stripe === 1 ? boost : dim)),
+          clamp(b * (stripe === 2 ? boost : dim)),
+        ];
+        return blendRgb([r, g, b], target, 0.35 + amount * 0.65).concat(a);
+      }
+      const weave = (Math.sin(x * 0.45) + Math.cos(y * 0.5)) * amount * 12;
+      return [clamp(r + weave), clamp(g + weave), clamp(b + weave), a];
+    });
+  }
+
+  if (mode === "stipple") {
+    return mapPixels(imageData, (r, g, b, a, x, y) => {
+      const lum = luminance(r, g, b) / 255;
+      const dot = pseudoNoise(x * 1.7, y * 1.7) > lum - amount * 0.25 ? 245 : 18;
+      return blendRgb([r, g, b], [dot, dot, dot], 0.22 + amount * 0.58).concat(a);
+    });
+  }
+
+  const output = canvasFromImageData(imageData);
+  const outputCtx = output.getContext("2d", { willReadFrequently: true });
+  const width = imageData.width;
+  const height = imageData.height;
+
+  outputCtx.save();
+  if (mode === "crosshatch") {
+    outputCtx.globalAlpha = 0.22 + amount * 0.28;
+    outputCtx.strokeStyle = "#17191c";
+    outputCtx.lineWidth = 1;
+    const gap = Math.max(8, Math.round(34 - amount * 18));
+    for (let x = -height; x < width; x += gap) {
+      outputCtx.beginPath();
+      outputCtx.moveTo(x, 0);
+      outputCtx.lineTo(x + height, height);
+      outputCtx.stroke();
+    }
+    for (let x = 0; x < width + height; x += gap * 1.4) {
+      outputCtx.beginPath();
+      outputCtx.moveTo(x, 0);
+      outputCtx.lineTo(x - height, height);
+      outputCtx.stroke();
+    }
+  } else if (mode === "bendayDots" || mode === "newsprintDots") {
+    const cell = Math.max(7, Math.round(22 - amount * 10));
+    outputCtx.globalAlpha = mode === "bendayDots" ? 0.58 : 0.68;
+    for (let y = 0; y < height; y += cell) {
+      for (let x = 0; x < width; x += cell) {
+        const index = sampleIndex(x + cell / 2, y + cell / 2, width, height);
+        const lum = luminance(imageData.data[index], imageData.data[index + 1], imageData.data[index + 2]) / 255;
+        const radius = (1 - lum) * cell * (0.18 + amount * 0.42);
+        outputCtx.fillStyle = mode === "bendayDots"
+          ? (x / cell + y / cell) % 3 === 0 ? "#ff6f59" : "#ffd447"
+          : "#17191c";
+        outputCtx.beginPath();
+        outputCtx.arc(x + cell / 2, y + cell / 2, radius, 0, Math.PI * 2);
+        outputCtx.fill();
+      }
+    }
+  }
+  outputCtx.restore();
+
+  return outputCtx.getImageData(0, 0, width, height);
+}
+
+function ditherEffect(imageData, amount) {
+  const matrix = [
+    [0, 8, 2, 10],
+    [12, 4, 14, 6],
+    [3, 11, 1, 9],
+    [15, 7, 13, 5],
+  ];
+
+  return mapPixels(imageData, (r, g, b, a, x, y) => {
+    const threshold = (matrix[y % 4][x % 4] / 16) * 255;
+    const lum = luminance(r, g, b);
+    const value = lum + (amount - 0.5) * 50 > threshold ? 255 : 0;
+    return blendRgb([r, g, b], [value, value, value], 0.35 + amount * 0.62).concat(a);
+  });
+}
+
+function blendImageData(original, effected, amount) {
+  const out = cloneImageData(original);
+
+  for (let index = 0; index < out.data.length; index += 4) {
+    out.data[index] = clamp(original.data[index] * (1 - amount) + effected.data[index] * amount);
+    out.data[index + 1] = clamp(original.data[index + 1] * (1 - amount) + effected.data[index + 1] * amount);
+    out.data[index + 2] = clamp(original.data[index + 2] * (1 - amount) + effected.data[index + 2] * amount);
+    out.data[index + 3] = original.data[index + 3];
+  }
+
+  return out;
 }
 
 function mapPixels(imageData, mapper) {
