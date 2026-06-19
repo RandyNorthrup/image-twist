@@ -466,7 +466,7 @@ function setStrengthFromSlider(shouldRender = true) {
   state.strength = percent / 100;
   refs.strengthInput.value = String(percent);
   refs.strengthInput.style.setProperty("--strength-fill", `${(percent / STRENGTH_MAX) * 100}%`);
-  refs.strengthInput.setAttribute("aria-valuetext", `${percent}% strength`);
+  refs.strengthInput.setAttribute("aria-valuetext", `${percent}% intensity`);
 
   if (shouldRender) {
     scheduleStrengthRender();

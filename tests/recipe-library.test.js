@@ -294,7 +294,7 @@ test("changing dropdown applies selected recipe immediately", () => {
   assert.equal(state.currentRecipe, selectedRecipe);
 });
 
-test("strength slider maps full range from near original to full effect", () => {
+test("intensity slider maps full range from near original to full effect", () => {
   const { refs, state, setStrengthFromSlider, scaledEffectAmount, effectBlendAmount } = loadRecipeLibrary();
   refs.strengthInput.value = "100";
 
@@ -302,7 +302,7 @@ test("strength slider maps full range from near original to full effect", () => 
 
   assert.equal(state.strength, 1);
   assert.equal(refs.strengthInput.textContent, "");
-  assert.equal(refs.strengthInput.ariaValueText || refs.strengthInput.attributes?.["aria-valuetext"], "100% strength");
+  assert.equal(refs.strengthInput.ariaValueText || refs.strengthInput.attributes?.["aria-valuetext"], "100% intensity");
   assert.equal(refs.strengthInput.style.getPropertyValue("--strength-fill"), "100%");
   assert.equal(effectBlendAmount(), 1);
   assert.ok(Math.abs(scaledEffectAmount(0.4, () => 0.5) - 0.4) < Number.EPSILON * 4);
@@ -311,6 +311,7 @@ test("strength slider maps full range from near original to full effect", () => 
   setStrengthFromSlider(false);
 
   assert.equal(state.strength, 0);
+  assert.equal(refs.strengthInput.ariaValueText || refs.strengthInput.attributes?.["aria-valuetext"], "0% intensity");
   assert.equal(refs.strengthInput.style.getPropertyValue("--strength-fill"), "0%");
   assert.equal(effectBlendAmount(), 0.02);
   assert.ok(Math.abs(scaledEffectAmount(0.4, () => 0.95) - 0.08) < Number.EPSILON * 4);
