@@ -1,60 +1,59 @@
 # Image Twist
 
-Image Twist is a zero-dependency browser app for turning a loaded image into playful generated variations. It is not a manual image editor: there are no sliders, layers, masks, crop tools, or per-effect tuning controls.
+Image Twist is a browser app for turning an image into generated visual twists. Load an image, choose a twist, adjust strength, and download the result as a PNG.
 
-## Current Behavior
+## Features
 
-1. The app starts with a generated sample image.
-2. A user can load a local image with the file picker or drag/drop.
-3. Loaded images are shown as `Original` first. No twist is applied automatically on load.
-4. The dropdown chooses which named twist recipe will run next.
-5. The `Twist` button applies the selected dropdown recipe. If that recipe is already visible, it picks a different twist instead of repeating the same named recipe.
-6. `Auto Party` repeatedly runs random twist recipes.
-7. Changing the dropdown while `Auto Party` is active turns `Auto Party` off.
-8. `Download PNG` exports the currently visible canvas.
+- Starts with a built-in sample image so the app is usable immediately.
+- Loads local images with file picker or drag and drop.
+- Shows loaded images as `Original` first before applying effects.
+- Offers 125 named twist recipes.
+- Applies dropdown selections immediately.
+- Keeps `Twist` from repeating the same visible recipe.
+- Adjusts twist strength live with a smooth slider.
+- Runs `Auto Party` to cycle through random twist recipes.
+- Exports the current canvas as a PNG.
+- Runs entirely in the browser with no upload step.
 
-## Twist Recipes
+## Twist Library
 
-There are 25 recipes:
+Image Twist includes 25 base recipe families, each with four extra variants:
 
-- Candy Portal
-- Glitch Carnival
-- Comic Blast
-- Arcade Night
-- Heatwave Poster
-- Pixel Popcorn
-- Mirror Maze
-- ASCII Dream
-- Retro Booth
-- Mosaic Party
-- Kaleido Soda
-- Prism Rain
-- Sticker Bomb
-- VHS Ghost
-- Solar Flare
-- Blueprint Beam
-- Bubble Wrap
-- Paint Splash
-- Slice Shuffle
-- Dream Bloom
-- Xerox Jam
-- Glass Blocks
-- Rainbow Tunnel
-- Poster Punch
-- Frosted Lens
+- `Neon Edge + Chroma Wave`
+- `Prism Bands + Light Leaks`
+- `Pixel Blocks + Noise Snow`
+- `Mirror Fold + Burst Rays`
 
-Recipes combine hidden effects such as glitch shifts, neon edge detection, swirl warping, comic posterizing, pixel blocks, halftone dots, ASCII texture, mirror folds, mosaic tiles, kaleidoscope slices, prism bands, stickers, light leaks, blueprint edges, bubbles, glass blocks, scanlines, bursts, paint splats, bloom, noise, and confetti.
+Recipe names describe the effect chain, such as `Duotone Swirl Confetti`, `Comic Halftone Burst`, or `Glass Blocks Soft Bloom Bubbles`.
 
-## Technical Notes
+## Setup
 
-- Local image loading uses the browser File API through a file input and drag/drop events.
-- Image decoding uses `createImageBitmap` when available, with an `Image` object fallback.
-- Images are drawn to a 2D canvas with `drawImage`.
-- The loaded source image data is stored so each twist can be generated from the original source rather than stacking on top of the previous twist.
-- Pixel-based effects use `getImageData`, `ImageData`, and `putImageData`.
-- The app does not depend on `CanvasRenderingContext2D.filter` for its core effects.
-- PNG export uses `HTMLCanvasElement.toBlob`.
+No install is required.
 
-## Run
+1. Download or clone this folder.
+2. Open `index.html` in a modern browser.
+3. Use the app locally.
 
-Open `index.html` in a browser. No build step or package install is required.
+## How To Use
+
+1. Open `index.html`.
+2. Use the sample image, drop an image onto `Drop image`, or choose an image file.
+3. Pick a twist from `Choose twist`.
+4. Move the `Strength` slider to reduce or increase the current twist.
+5. Press `Twist` to jump to another twist.
+6. Press `Auto Party` to cycle through random twists.
+7. Press `Download PNG` to save the visible result.
+
+## Controls
+
+- `Choose twist`: applies the selected recipe immediately.
+- `Twist`: applies the selected recipe, or chooses a different one if it is already showing.
+- `Strength`: adjusts the current twist live while keeping the same random seed for smoother changes.
+- `Auto Party`: repeatedly applies random recipes until turned off.
+- `Download PNG`: saves the current canvas.
+
+## Notes
+
+- Images stay local in the browser.
+- Each twist is generated from the original image, not stacked on top of the previous twist.
+- The dropdown shows `Original` before any twist is selected.

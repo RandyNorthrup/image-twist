@@ -10,9 +10,14 @@ const refs = {
   twistAgain: document.querySelector("#twistAgain"),
   autoParty: document.querySelector("#autoParty"),
   downloadImage: document.querySelector("#downloadImage"),
+  strengthInput: document.querySelector("#strengthInput"),
 };
 
 const MAX_SIDE = 2100;
+const STRENGTH_MIN = 0;
+const STRENGTH_MAX = 200;
+const TWIST_PLACEHOLDER_VALUE = "";
+const TWIST_PLACEHOLDER_LABEL = "Original";
 
 const state = {
   source: null,
@@ -21,12 +26,18 @@ const state = {
   autoTimer: null,
   isRendering: false,
   seed: 1,
+  strength: 1,
+  strengthFrame: null,
+  queuedStrengthRender: false,
 };
+
+const RECIPE_TITLE_MAX_SIZE = 36;
+const RECIPE_TITLE_MIN_SIZE = 15;
 
 const recipes = [
   {
     id: "candy-portal",
-    name: "Candy Portal",
+    name: "Duotone Swirl Confetti",
     accent: "#ff6fbc",
     steps: [
       ["duotone", 0.95],
@@ -36,7 +47,7 @@ const recipes = [
   },
   {
     id: "glitch-carnival",
-    name: "Glitch Carnival",
+    name: "Color Pop Glitch Neon Scanlines",
     accent: "#40c9c6",
     steps: [
       ["pop", 0.7],
@@ -47,7 +58,7 @@ const recipes = [
   },
   {
     id: "comic-blast",
-    name: "Comic Blast",
+    name: "Comic Halftone Burst",
     accent: "#ffd447",
     steps: [
       ["comic", 0.9],
@@ -57,7 +68,7 @@ const recipes = [
   },
   {
     id: "arcade-night",
-    name: "Arcade Night",
+    name: "Night Vision Glitch Scanlines",
     accent: "#29ff72",
     steps: [
       ["nightVision", 0.92],
@@ -67,7 +78,7 @@ const recipes = [
   },
   {
     id: "heatwave-poster",
-    name: "Heatwave Poster",
+    name: "Heat Map Comic Burst",
     accent: "#ff6f59",
     steps: [
       ["heatMap", 0.98],
@@ -77,7 +88,7 @@ const recipes = [
   },
   {
     id: "pixel-popcorn",
-    name: "Pixel Popcorn",
+    name: "Pixel Blocks Color Pop Confetti",
     accent: "#c7f464",
     steps: [
       ["pixelate", 0.78],
@@ -87,7 +98,7 @@ const recipes = [
   },
   {
     id: "mirror-maze",
-    name: "Mirror Maze",
+    name: "Mirror Fold Duotone Neon",
     accent: "#7c65ff",
     steps: [
       ["mirror", 0.72],
@@ -97,7 +108,7 @@ const recipes = [
   },
   {
     id: "ascii-dream",
-    name: "ASCII Dream",
+    name: "ASCII Glitch Scanlines",
     accent: "#c7f464",
     steps: [
       ["ascii", 0.74],
@@ -107,7 +118,7 @@ const recipes = [
   },
   {
     id: "retro-booth",
-    name: "Retro Booth",
+    name: "Old Photo Burst Confetti",
     accent: "#c59b62",
     steps: [
       ["oldPhoto", 0.9],
@@ -117,7 +128,7 @@ const recipes = [
   },
   {
     id: "mosaic-party",
-    name: "Mosaic Party",
+    name: "Mosaic Color Pop Confetti",
     accent: "#40c9c6",
     steps: [
       ["mosaic", 0.82],
@@ -127,7 +138,7 @@ const recipes = [
   },
   {
     id: "kaleido-soda",
-    name: "Kaleido Soda",
+    name: "Kaleidoscope Color Pop Prism Bands",
     accent: "#7c65ff",
     steps: [
       ["kaleidoscope", 0.78],
@@ -137,7 +148,7 @@ const recipes = [
   },
   {
     id: "prism-rain",
-    name: "Prism Rain",
+    name: "Chroma Wave Rainbow Bands Light Leaks",
     accent: "#40c9c6",
     steps: [
       ["chromaWave", 0.86],
@@ -147,7 +158,7 @@ const recipes = [
   },
   {
     id: "sticker-bomb",
-    name: "Sticker Bomb",
+    name: "Color Pop Stickers Comic",
     accent: "#ffd447",
     steps: [
       ["pop", 0.72],
@@ -157,7 +168,7 @@ const recipes = [
   },
   {
     id: "vhs-ghost",
-    name: "VHS Ghost",
+    name: "Ghost Trail Glitch Scanlines Noise",
     accent: "#ff6f59",
     steps: [
       ["ghostTrail", 0.76],
@@ -168,7 +179,7 @@ const recipes = [
   },
   {
     id: "solar-flare",
-    name: "Solar Flare",
+    name: "Solarize Light Leaks Burst",
     accent: "#ffb000",
     steps: [
       ["solarize", 0.88],
@@ -178,7 +189,7 @@ const recipes = [
   },
   {
     id: "blueprint-beam",
-    name: "Blueprint Beam",
+    name: "Blueprint Scanlines Grid",
     accent: "#2f80ed",
     steps: [
       ["blueprint", 0.86],
@@ -188,7 +199,7 @@ const recipes = [
   },
   {
     id: "bubble-wrap",
-    name: "Bubble Wrap",
+    name: "Glass Blocks Bubbles Duotone",
     accent: "#40c9c6",
     steps: [
       ["glassBlocks", 0.45],
@@ -198,7 +209,7 @@ const recipes = [
   },
   {
     id: "paint-splash",
-    name: "Paint Splash",
+    name: "Color Pop Paint Splats Halftone",
     accent: "#ff6f59",
     steps: [
       ["pop", 0.82],
@@ -208,7 +219,7 @@ const recipes = [
   },
   {
     id: "slice-shuffle",
-    name: "Slice Shuffle",
+    name: "Slice Shuffle Chroma Wave Confetti",
     accent: "#c7f464",
     steps: [
       ["sliceShuffle", 0.88],
@@ -218,7 +229,7 @@ const recipes = [
   },
   {
     id: "dream-bloom",
-    name: "Dream Bloom",
+    name: "Soft Bloom Duotone Light Leaks",
     accent: "#ff9de2",
     steps: [
       ["softBloom", 0.86],
@@ -228,7 +239,7 @@ const recipes = [
   },
   {
     id: "xerox-jam",
-    name: "Xerox Jam",
+    name: "Xerox Slice Shuffle Noise",
     accent: "#17191c",
     steps: [
       ["xerox", 0.82],
@@ -238,7 +249,7 @@ const recipes = [
   },
   {
     id: "glass-blocks",
-    name: "Glass Blocks",
+    name: "Glass Blocks Neon Rainbow Bands",
     accent: "#40c9c6",
     steps: [
       ["glassBlocks", 0.86],
@@ -248,7 +259,7 @@ const recipes = [
   },
   {
     id: "rainbow-tunnel",
-    name: "Rainbow Tunnel",
+    name: "Swirl Rainbow Bands Kaleidoscope",
     accent: "#7c65ff",
     steps: [
       ["swirl", 0.7],
@@ -258,7 +269,7 @@ const recipes = [
   },
   {
     id: "poster-punch",
-    name: "Poster Punch",
+    name: "Poster Punch Comic Grid",
     accent: "#ff6f59",
     steps: [
       ["posterPunch", 0.9],
@@ -268,7 +279,7 @@ const recipes = [
   },
   {
     id: "frosted-lens",
-    name: "Frosted Lens",
+    name: "Glass Blocks Soft Bloom Bubbles",
     accent: "#9ee8ff",
     steps: [
       ["glassBlocks", 0.55],
@@ -277,6 +288,51 @@ const recipes = [
     ],
   },
 ];
+
+const recipeVariantProfiles = [
+  {
+    id: "neon-chroma",
+    label: "Neon Edge + Chroma Wave",
+    accent: "#40c9c6",
+    amountLift: 0.02,
+    steps: [
+      ["neon", 0.54],
+      ["chromaWave", 0.46],
+    ],
+  },
+  {
+    id: "prism-light-leak",
+    label: "Prism Bands + Light Leaks",
+    accent: "#ff9de2",
+    amountLift: -0.04,
+    steps: [
+      ["prismBands", 0.58],
+      ["lightLeaks", 0.5],
+    ],
+  },
+  {
+    id: "pixel-noise",
+    label: "Pixel Blocks + Noise Snow",
+    accent: "#c7f464",
+    amountLift: -0.02,
+    steps: [
+      ["pixelate", 0.52],
+      ["noiseSnow", 0.44],
+    ],
+  },
+  {
+    id: "mirror-burst",
+    label: "Mirror Fold + Burst Rays",
+    accent: "#ffd447",
+    amountLift: 0.01,
+    steps: [
+      ["mirror", 0.5],
+      ["burst", 0.48],
+    ],
+  },
+];
+
+appendRecipeVariants();
 
 const transforms = {
   pop: popColor,
@@ -316,16 +372,49 @@ const transforms = {
   scanlines,
 };
 
+function appendRecipeVariants() {
+  const baseRecipes = recipes.slice();
+
+  baseRecipes.forEach((recipe) => {
+    recipeVariantProfiles.forEach((profile) => {
+      recipes.push(createRecipeVariant(recipe, profile));
+    });
+  });
+}
+
+function createRecipeVariant(recipe, profile) {
+  return {
+    id: `${recipe.id}-${profile.id}`,
+    name: `${recipe.name}: ${profile.label}`,
+    accent: profile.accent,
+    steps: [
+      ...recipe.steps.map(([stepName, amount], index) => [
+        stepName,
+        clampUnit(amount + profile.amountLift + index * 0.015),
+      ]),
+      ...profile.steps,
+    ],
+  };
+}
+
 init();
 
 function init() {
   populateTwistSelect();
   bindEvents();
+  setStrengthFromSlider(false);
   loadSample();
 }
 
 function populateTwistSelect() {
   refs.twistSelect.innerHTML = "";
+
+  const placeholder = document.createElement("option");
+  placeholder.value = TWIST_PLACEHOLDER_VALUE;
+  placeholder.textContent = TWIST_PLACEHOLDER_LABEL;
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  refs.twistSelect.append(placeholder);
 
   recipes.forEach((recipe) => {
     const option = document.createElement("option");
@@ -333,6 +422,8 @@ function populateTwistSelect() {
     option.textContent = recipe.name;
     refs.twistSelect.append(option);
   });
+
+  resetTwistSelect();
 }
 
 function bindEvents() {
@@ -345,14 +436,13 @@ function bindEvents() {
 
   refs.twistSelect.addEventListener("change", () => {
     stopAutoParty();
-    if (!state.currentRecipe) {
-      refs.recipeName.textContent = "Original";
-    }
+    runSelectedTwist();
   });
 
   refs.twistAgain.addEventListener("click", () => runChosenTwist());
   refs.downloadImage.addEventListener("click", downloadImage);
   refs.autoParty.addEventListener("click", toggleAutoParty);
+  refs.strengthInput.addEventListener("input", () => setStrengthFromSlider());
 
   ["dragenter", "dragover"].forEach((eventName) => {
     refs.dropZone.addEventListener(eventName, (event) => {
@@ -433,7 +523,8 @@ function setSourceFromDrawable(drawable, fileName) {
   state.fileName = fileName || "image-twist";
   state.currentRecipe = null;
   document.documentElement.style.setProperty("--accent", "#40c9c6");
-  refs.recipeName.textContent = "Original";
+  resetTwistSelect();
+  setRecipeName("Original");
 }
 
 function loadSample() {
@@ -495,26 +586,39 @@ function runChosenTwist() {
   runTwist(recipe);
 }
 
+function runSelectedTwist() {
+  const selectedRecipe = recipes.find((item) => item.id === refs.twistSelect.value);
+  if (selectedRecipe) {
+    runTwist(selectedRecipe);
+  }
+}
+
 function runRandomTwist() {
   runTwist(pickRecipe());
 }
 
-function runTwist(recipe) {
+function runTwist(recipe, options = {}) {
   if (!state.source || state.isRendering || !recipe) {
     return;
   }
 
+  const isLiveRender = options.live === true;
   state.isRendering = true;
   state.currentRecipe = recipe;
-  state.seed = Math.floor(Math.random() * 1000000) + 1;
+  if (!options.preserveSeed) {
+    state.seed = Math.floor(Math.random() * 1000000) + 1;
+  }
   document.documentElement.style.setProperty("--accent", recipe.accent);
-  refs.recipeName.textContent = recipe.name;
+  setRecipeName(recipe.name);
   refs.twistSelect.value = recipe.id;
-  refs.twistAgain.disabled = true;
-  refs.twistSelect.disabled = true;
-  refs.downloadImage.disabled = true;
-  document.body.classList.add("is-twisting");
-  setStatus("Twisting...");
+  if (!isLiveRender) {
+    refs.twistAgain.disabled = true;
+    refs.twistSelect.disabled = true;
+    refs.downloadImage.disabled = true;
+    refs.strengthInput.disabled = true;
+    document.body.classList.add("is-twisting");
+    setStatus("Twisting...");
+  }
 
   requestAnimationFrame(() => {
     try {
@@ -523,7 +627,7 @@ function runTwist(recipe) {
 
       recipe.steps.forEach(([stepName, baseAmount], index) => {
         const transform = transforms[stepName];
-        const amount = clampUnit(baseAmount + (random() - 0.5) * 0.18);
+        const amount = scaledEffectAmount(baseAmount, random);
         working = transform(working, amount, random, index);
       });
 
@@ -534,10 +638,16 @@ function runTwist(recipe) {
       setStatus("Twist failed");
     } finally {
       state.isRendering = false;
-      refs.twistAgain.disabled = false;
-      refs.twistSelect.disabled = false;
-      refs.downloadImage.disabled = false;
-      window.setTimeout(() => document.body.classList.remove("is-twisting"), 380);
+      if (!isLiveRender) {
+        refs.twistAgain.disabled = false;
+        refs.twistSelect.disabled = false;
+        refs.downloadImage.disabled = false;
+        refs.strengthInput.disabled = false;
+        window.setTimeout(() => document.body.classList.remove("is-twisting"), 380);
+      }
+      if (state.queuedStrengthRender) {
+        scheduleStrengthRender();
+      }
     }
   });
 }
@@ -549,8 +659,84 @@ function showOriginal() {
 
   ctx.putImageData(state.source, 0, 0);
   state.currentRecipe = null;
-  refs.recipeName.textContent = "Original";
+  resetTwistSelect();
+  setRecipeName("Original");
   setStatus(`Original - ${canvas.width} x ${canvas.height}`);
+}
+
+function resetTwistSelect() {
+  refs.twistSelect.value = TWIST_PLACEHOLDER_VALUE;
+}
+
+function setRecipeName(name) {
+  refs.recipeName.textContent = name;
+  fitRecipeName();
+  window.setTimeout(fitRecipeName, 0);
+}
+
+function fitRecipeName() {
+  const textLength = refs.recipeName.textContent.length;
+  let fontSize = Math.max(RECIPE_TITLE_MIN_SIZE, Math.min(RECIPE_TITLE_MAX_SIZE, 39 - textLength * 0.45));
+  refs.recipeName.style.setProperty("--recipe-title-size", `${fontSize}px`);
+
+  if (typeof refs.recipeName.getBoundingClientRect !== "function") {
+    return;
+  }
+
+  const panel = refs.recipeName.closest?.(".twist-readout");
+  const panelHeight = panel?.getBoundingClientRect().height || 156;
+  const gridHeight = refs.recipeName.clientHeight || panelHeight - 86;
+  const availableHeight = Math.max(34, Math.min(panelHeight - 86, gridHeight));
+
+  while (fontSize > RECIPE_TITLE_MIN_SIZE && refs.recipeName.scrollHeight > availableHeight) {
+    fontSize -= 1;
+    refs.recipeName.style.setProperty("--recipe-title-size", `${fontSize}px`);
+  }
+}
+
+function setStrengthFromSlider(shouldRender = true) {
+  const rawPercent = refs.strengthInput.value === "" ? 100 : Number(refs.strengthInput.value);
+  const percent = clampNumber(rawPercent, STRENGTH_MIN, STRENGTH_MAX);
+  state.strength = percent / 100;
+  refs.strengthInput.value = String(percent);
+  refs.strengthInput.style.setProperty("--strength-fill", `${(percent / STRENGTH_MAX) * 100}%`);
+  refs.strengthInput.setAttribute("aria-valuetext", `${percent}% strength`);
+
+  if (shouldRender) {
+    scheduleStrengthRender();
+  }
+}
+
+function scheduleStrengthRender() {
+  if (!state.source || !state.currentRecipe) {
+    return;
+  }
+
+  state.queuedStrengthRender = true;
+  if (state.strengthFrame) {
+    return;
+  }
+
+  state.strengthFrame = requestAnimationFrame(flushStrengthRender);
+}
+
+function flushStrengthRender() {
+  state.strengthFrame = null;
+  if (!state.queuedStrengthRender || !state.currentRecipe) {
+    return;
+  }
+
+  if (state.isRendering) {
+    state.strengthFrame = requestAnimationFrame(flushStrengthRender);
+    return;
+  }
+
+  state.queuedStrengthRender = false;
+  runTwist(state.currentRecipe, { live: true, preserveSeed: true });
+}
+
+function scaledEffectAmount(baseAmount, random) {
+  return clampUnit(baseAmount * state.strength + (random() - 0.5) * 0.18);
 }
 
 function pickRecipe() {
@@ -1490,6 +1676,14 @@ function clamp(value) {
 
 function clampUnit(value) {
   return Math.max(0, Math.min(1, value));
+}
+
+function clampNumber(value, min, max) {
+  if (!Number.isFinite(value)) {
+    return min;
+  }
+
+  return Math.max(min, Math.min(max, Math.round(value)));
 }
 
 function luminance(r, g, b) {

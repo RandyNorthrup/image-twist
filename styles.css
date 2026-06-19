@@ -5,6 +5,7 @@
   --paper: #f4f1ea;
   --panel: #fffdf7;
   --line: #d8d2c7;
+  --pink: #ff6fbc;
   --lime: #c7f464;
   --cyan: #40c9c6;
   --coral: #ff6f59;
@@ -156,11 +157,26 @@ h2 {
 
 .twist-readout {
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr) 38px;
   gap: 14px;
+  height: 156px;
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
+  overflow: hidden;
+}
+
+#recipeName {
+  --recipe-title-size: 36px;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font-size: var(--recipe-title-size);
+  line-height: 1.04;
 }
 
 .readout-label {
@@ -245,6 +261,80 @@ h2 {
 .action-stack {
   display: grid;
   gap: 10px;
+}
+
+.strength-control {
+  --strength-fill: 50%;
+  display: grid;
+  gap: 12px;
+  margin-top: auto;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--pink), #17191c 28%);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 111, 188, 0.18), rgba(255, 255, 255, 0.92)),
+    var(--panel);
+}
+
+.strength-copy {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+#strengthInput {
+  width: 100%;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  accent-color: var(--pink);
+  cursor: pointer;
+  appearance: none;
+}
+
+#strengthInput::-webkit-slider-runnable-track {
+  height: 10px;
+  border: 1px solid rgba(23, 25, 28, 0.2);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, var(--pink) var(--strength-fill), #ffffff var(--strength-fill));
+  box-shadow: inset 0 1px 2px rgba(23, 25, 28, 0.14);
+}
+
+#strengthInput::-webkit-slider-thumb {
+  width: 24px;
+  height: 24px;
+  margin-top: -8px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: var(--pink);
+  box-shadow: 0 6px 16px rgba(255, 111, 188, 0.36);
+  appearance: none;
+}
+
+#strengthInput::-moz-range-track {
+  height: 10px;
+  border: 1px solid rgba(23, 25, 28, 0.2);
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: inset 0 1px 2px rgba(23, 25, 28, 0.14);
+}
+
+#strengthInput::-moz-range-progress {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--pink);
+}
+
+#strengthInput::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: var(--pink);
+  box-shadow: 0 6px 16px rgba(255, 111, 188, 0.36);
 }
 
 .primary-action {
